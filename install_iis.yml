@@ -1,0 +1,28 @@
+---
+- name: install the iis web service
+  hosts: windows
+
+  tasks:
+    - name: install iis
+      win_feature:
+        name: Web-Server
+        state: present
+
+    - name: start iis service
+      win_service:
+        name: W3Svc
+        state: started
+
+    - name: Open port for site on the firewall
+      win_firewall_rule:
+        name: "iisport 80"
+        enable: yes
+        state: present
+        localport: "80"
+        action: Allow
+        direction: In
+        protocol: Tcp
+
+    - name: Show website address
+      debug:
+        msg: http://{{ ansible_host }}
